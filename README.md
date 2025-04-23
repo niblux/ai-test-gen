@@ -24,3 +24,25 @@ This CLI helps developers automatically generate unit tests for their frontend c
 ```bash
 git clone https://github.com/your-username/ai-testgen
 cd ai-testgen
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Run ollama model locally
+```bash
+ollama run llama3
+```
+
+📌 Download Ollama if you haven't already.
+
+You can use any model you like, such as 
+```bash
+ollama run deepseek-coder
+```
+### 4. Start AI Test Gen
+```bash
+npx ts-node src/interactive-cli.ts
+```
