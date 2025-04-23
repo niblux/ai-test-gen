@@ -3,6 +3,13 @@
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "init": "^0.1.2",
+    "inquirer": "^12.5.2",
     "ts-morph": "^25.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "node-fetch": "^3.3.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
