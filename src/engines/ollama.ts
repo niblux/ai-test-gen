@@ -2,7 +2,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch'; // add this as a dependency
 const PROMPT_TEMPLATE_PATH = path.join(__dirname, '../prompts/angular-test.prompt.txt');
 
 // Load and build the final prompt

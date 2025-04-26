@@ -1,5 +1,4 @@
-// src/interactive-cli.ts
-
+#!/usr/bin/env node
 import inquirer from 'inquirer';
 import fs from 'fs';
 import { analyzeComponent } from './analyse-component';
@@ -44,7 +43,9 @@ async function runInteractiveCLI() {
   ]);
 
   const fileContent = fs.readFileSync(answers.file, 'utf-8');
+  
   const structure = analyzeComponent(answers.file);
+  
   const context = {
     ...answers,
     mocks: answers.mocks.split(',').map((m: any) => m.trim()).filter(Boolean)
