@@ -1,36 +1,55 @@
-// src/ollama.ts
+// src/engines/ollama.ts
 
-import fs from 'fs';
-import path from 'path';
-const PROMPT_TEMPLATE_PATH = path.join(__dirname, '../prompts/angular-test.prompt.txt');
-
-// Load and build the final prompt
-function buildPrompt(componentCode: string): string {
-  const promptTemplate = fs.readFileSync(PROMPT_TEMPLATE_PATH, 'utf-8');
-  return promptTemplate.replace('{{COMPONENT_CODE}}', componentCode);
+interface OllamaResponse {
+  response: string;
 }
 
-export async function generateTestFromComponent(componentCode: string): Promise<string> {
-  const prompt = buildPrompt(componentCode);
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434/api/generate';
 
-  const response = await fetch('http://localhost:11434/api/generate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-    //   model: 'codellama', // or mistral, deepseek-coder, etc.
-      // model: 'deepseek-coder', // or mistral, deepseek-coder, etc.
-      model: 'llama3', // or mistral, deepseek-coder, etc.
-      prompt: prompt,
-      stream: false
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+export async function generateTestFromComponent(prompt: string): Promise<string> {
+  if (!prompt.trim()) {
+    throw new Error('Prompt is empty. Cannot send request to Ollama.');
   }
 
-  const data: any = await response.json(); // todo define type, once we know what the api returns.
-  return data.response as string;
+  try {
+    const response = await fetch(OLLAMA_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama3', // or another model
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as OllamaResponse;
+    return data.response;
+  } catch (firstError) {
+    console.warn('First Ollama request failed, retrying once...');
+
+    const retryResponse = await fetch(OLLAMA_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama3',
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    if (!retryResponse.ok) {
+      throw new Error(`Retry failed: ${retryResponse.status} ${retryResponse.statusText}`);
+    }
+
+    const retryData = (await retryResponse.json()) as OllamaResponse;
+    return retryData.response;
+  }
 }
