@@ -1,10 +1,13 @@
 {
   "name": "ai-testgen-cli",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "🧪 A CLI tool to generate unit tests for Angular, React, and Vue components using local LLMs like Ollama.",
   "bin": {
     "ai-testgen": "dist/interactive-cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "main": "dist/interactive-cli.js",
   "scripts": {
     "build": "tsc && cpx \"src/prompts/**/*\" dist/prompts",
